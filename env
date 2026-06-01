@@ -1,0 +1,4 @@
+JWT_SECRET=supersecretkey
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+MONGO_URI=mongodb://localhost:27017/serenovia

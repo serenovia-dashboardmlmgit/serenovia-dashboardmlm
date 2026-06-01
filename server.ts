@@ -5,8 +5,8 @@ import nodemailer from "nodemailer";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-dotenv.config();
 
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -15,9 +15,8 @@ app.use(express.json());
 const PORT = 5000;
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-
 // --- MongoDB Connection ---
-mongoose.connect(process.env.MONGO_URI!)
+mongoose.connect(process.env.MONGO_URL!)   // ✅ matches your .env file
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
@@ -25,8 +24,8 @@ mongoose.connect(process.env.MONGO_URI!)
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-  user: process.env.EMAIL_USER,
-pass: process.env.EMAIL_PASS
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
@@ -130,7 +129,7 @@ app.post("/api/register", async (req, res) => {
   await newUser.save();
 
   await transporter.sendMail({
-    from: "your-email@gmail.com",
+    from: process.env.EMAIL_USER,   //  use env instead of hardcoded
     to: email,
     subject: "Verify your Serenovia account",
     text: `Your verification code is ${verificationCode}`

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import User from "../model/User.ts";   // ✅ use .ts if running ts-node, .js if running compiled
+import User from "../model.ts/User.js";   // ✅ use .ts if running ts-node, .js if running compiled
 import { authenticateJWT } from "../middleware/auth.js";
 
 const router = Router();

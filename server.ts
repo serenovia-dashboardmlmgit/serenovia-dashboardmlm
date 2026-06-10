@@ -3,10 +3,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-import authRoutes from "./routes/auth";
-import statsRoutes from "./routes/stats";
-import leaderboardRoutes from "./routes/leaderboard";
-import announcementRoutes from "./routes/announcements";
+import authRoutes from "./routes/auth.js";
+import statsRoutes from "./routes/stats.js";
+import leaderboardRoutes from "./routes/leaderboard.js";
+import announcementRoutes from "./routes/Announcemet.js";
 
 dotenv.config();
 

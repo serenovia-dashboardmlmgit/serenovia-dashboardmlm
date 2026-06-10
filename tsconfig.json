@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     /* File Layout */
-    "rootDir": "./src",               // ✅ put all source .ts files in backend/src
-    "outDir": "../dist",              // ✅ compiled output goes outside backend into dist
+    "rootDir": "./",                  // backend is the root since tsconfig.json is inside it
+    "outDir": "../dist",              // compiled output goes outside backend into dist
 
     /* Environment Settings */
     "module": "NodeNext",
@@ -30,6 +30,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"],         // ✅ include all TS files inside backend/src
-  "exclude": ["node_modules", "../dist"] // ✅ exclude dependencies and build output
+  "include": ["**/*.ts"],             // ✅ include all TS files inside backend
+  "exclude": ["node_modules", "../dist"]
 }

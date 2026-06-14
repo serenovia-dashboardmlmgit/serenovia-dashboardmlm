@@ -2,12 +2,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api"; // Axios helper we created
+import Registration from "./Registration"; // import your existing registration form
 import "./LandingPage.css";
 import logo from "../assets/Serenovia.png";
 
 function LandingPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [isRegister, setIsRegister] = useState(false); // toggle between login/register
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,30 +33,52 @@ function LandingPage() {
       <div className="landing-box">
         <img src={logo} alt="Serenovia Logo" className="landing-logo" />
         <h1 className="landing-title">Welcome to Serenovia</h1>
-        <form onSubmit={handleLogin} className="landing-form">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit">Log In</button>
-        </form>
+
+        {isRegister ? (
+          // Show registration form
+          <Registration />
+        ) : (
+          // Show login form
+          <form onSubmit={handleLogin} className="landing-form">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button type="submit">Log In</button>
+          </form>
+        )}
+
         <p className="landing-footer">
-          <button
-            className="forgot-btn"
-            onClick={() => navigate("/forgot-password")}
-          >
-            Forgotten Password?
-          </button>
+          {isRegister ? (
+            <button className="switch-btn" onClick={() => setIsRegister(false)}>
+              Already have an account? Log In
+            </button>
+          ) : (
+            <>
+              <button
+                className="forgot-btn"
+                onClick={() => navigate("/forgot-password")}
+              >
+                Forgotten Password?
+              </button>
+              <button
+                className="switch-btn"
+                onClick={() => setIsRegister(true)}
+              >
+                Don’t have an account? Register
+              </button>
+            </>
+          )}
         </p>
       </div>
     </div>
@@ -62,4 +86,3 @@ function LandingPage() {
 }
 
 export default LandingPage;
-

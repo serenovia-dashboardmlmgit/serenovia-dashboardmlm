@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import serenoviaLogo from "../assets/serenovia.png"; // place logo in src/assets
+import { useNavigate } from "react-router-dom";
+import serenoviaLogo from "../assets/serenovia.png";
 import "./RegistrationNew.css";
-
 
 const africanCountries = [
   "Cameroon", "Nigeria", "Ghana", "Kenya", "South Africa",
@@ -10,6 +10,8 @@ const africanCountries = [
 ];
 
 const Registration: React.FC = () => {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -17,8 +19,7 @@ const Registration: React.FC = () => {
     userId: "",
     country: "",
     password: "",
-    confirmPassword: "",
-    referralCode: ""
+    confirmPassword: ""
   });
   const [message, setMessage] = useState("");
   const [verificationStep, setVerificationStep] = useState(false);
@@ -29,6 +30,7 @@ const Registration: React.FC = () => {
   };
 
   const handleRegister = async () => {
+    // Validate mandatory fields
     for (const [key, value] of Object.entries(form)) {
       if (!value.trim()) {
         setMessage(`❌ ${key} is required`);
@@ -41,7 +43,7 @@ const Registration: React.FC = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/register", {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)
@@ -49,13 +51,14 @@ const Registration: React.FC = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage(
-          `🎉 Registration successful! Welcome, ${data.user.fullName}.
-           Please check your email inbox for a verification code to confirm your account.`
-        );
+        setMessage("🎉 Registration successful! Please check your email for a verification code.");
         setVerificationStep(true);
       } else {
-        setMessage(`❌ Error: ${data.error}`);
+        if (data.error.includes("User ID is already taken")) {
+          setMessage("❌ That User ID is already taken. Please choose another one.");
+        } else {
+          setMessage(`❌ Error: ${data.error}`);
+        }
       }
     } catch (err) {
       setMessage("❌ Registration failed. Please try again.");
@@ -72,18 +75,8 @@ const Registration: React.FC = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("✅ Email verified successfully! You can now log in.");
-        setVerificationStep(false);
-        setForm({
-          fullName: "",
-          email: "",
-          phone: "",
-          userId: "",
-          country: "",
-          password: "",
-          confirmPassword: "",
-          referralCode: ""
-        });
+        setMessage("✅ Email verified successfully! Redirecting to login...");
+        setTimeout(() => navigate("/login"), 2000); // redirect after 2s
       } else {
         setMessage(`❌ Verification failed: ${data.error}`);
       }
@@ -94,9 +87,7 @@ const Registration: React.FC = () => {
 
   return (
     <div className="registration-container">
-      {/* Serenovia logo */}
       <img src={serenoviaLogo} alt="Serenovia Logo" className="logo" />
-
       <h2>Register New Account</h2>
 
       {!verificationStep ? (
@@ -112,9 +103,10 @@ const Registration: React.FC = () => {
 
           <label htmlFor="userId">Create User ID</label>
           <input id="userId" name="userId" value={form.userId} onChange={handleChange} />
+          <small className="hint">Your referral code will be the same as your User ID.</small>
 
           <label htmlFor="country">Country</label>
-          <select id="country" name="country" value={form.country} onChange={handleChange}>
+          <select id="country" name="country" value={form.country} onChange={handleChange} aria-label="Country">
             <option value="">Select Country</option>
             {africanCountries.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -124,9 +116,6 @@ const Registration: React.FC = () => {
 
           <label htmlFor="confirmPassword">Confirm Password</label>
           <input id="confirmPassword" name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleChange} />
-
-          <label htmlFor="referralCode">Referral Code</label>
-          <input id="referralCode" name="referralCode" value={form.referralCode} onChange={handleChange} />
 
           <button type="button" className="register-btn" onClick={handleRegister}>
             Create Account

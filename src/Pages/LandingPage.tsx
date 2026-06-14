@@ -58,28 +58,41 @@ function LandingPage() {
           </form>
         )}
 
-        <p className="landing-footer">
+        <div className="landing-footer">
           {isRegister ? (
-            <button className="switch-btn" onClick={() => setIsRegister(false)}>
-              Already have an account? Log In
-            </button>
+            <div className="action-box">
+              <h3>Already have an account?</h3>
+              <p>Log in to access your Serenovia dashboard.</p>
+              <button className="switch-btn" onClick={() => setIsRegister(false)}>
+                Log In
+              </button>
+            </div>
           ) : (
             <>
-              <button
-                className="forgot-btn"
-                onClick={() => navigate("/forgot-password")}
-              >
-                Forgotten Password?
-              </button>
-              <button
-                className="switch-btn"
-                onClick={() => setIsRegister(true)}
-              >
-                Don’t have an account? Register
-              </button>
+              <div className="action-box">
+                <h3>Forgotten Password?</h3>
+                <p>Reset your password securely to regain access.</p>
+                <button
+                  className="forgot-btn"
+                  onClick={() => navigate("/forgot-password")}
+                >
+                  Change Password
+                </button>
+              </div>
+
+              <div className="action-box">
+                <h3>Don’t have an account?</h3>
+                <p>Create your Serenovia account and start today.</p>
+                <button
+                  className="switch-btn"
+                  onClick={() => setIsRegister(true)}
+                >
+                  Register New Account
+                </button>
+              </div>
             </>
           )}
-        </p>
+        </div>
       </div>
     </div>
   );

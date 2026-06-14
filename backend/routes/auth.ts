@@ -1,23 +1,28 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../model.ts/User.js";   // ✅ use .js when running compiled output
+import User from "../model.ts/User.js";
+import { transporter } from "../server.js"; // ✅ global transporter
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET!;
+
+// Ensure JWT_SECRET is defined
+const JWT_SECRET: string = process.env.JWT_SECRET as string;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined in environment variables");
+}
 
 // --- Login Route ---
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ error: "Invalid credentials" });
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Guard against missing passwordHash
-    if (!user.passwordHash) {
+    const user = await User.findOne({ email });
+    if (!user || !user.passwordHash) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
@@ -27,7 +32,7 @@ router.post("/login", async (req, res) => {
     }
 
     if (!user.verified) {
-      return res.status(400).json({ error: "Email not verified" });
+      return res.status(403).json({ error: "Email not verified" });
     }
 
     const token = jwt.sign(
@@ -36,33 +41,45 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.json({
+    return res.json({
       message: "Login successful",
       token,
       user: { id: user._id, fullName: user.fullName, email: user.email }
     });
   } catch (err) {
-    res.status(500).json({ error: "Login failed" });
+    console.error("Login error:", err);
+    return res.status(500).json({ error: "Login failed" });
   }
 });
 
 // --- Register Route ---
 router.post("/register", async (req, res) => {
   try {
-    const { fullName, email, phone, userId, country, password, referralCode } = req.body;
+    const { fullName, email, phone, userId, country, password } = req.body;
 
-    if (!fullName || !email || !phone || !userId || !country || !password || !referralCode) {
+    if (!fullName || !email || !phone || !userId || !country || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    const existing = await User.findOne({ email });
-    if (existing) {
+    // ✅ Check if email already exists
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
       return res.status(400).json({ error: "Email already registered" });
     }
 
+    // ✅ Check if userId is already taken
+    const existingUserId = await User.findOne({ userId });
+    if (existingUserId) {
+      return res.status(400).json({ error: "User ID is already taken. Please choose another one." });
+    }
+
+    // ✅ Hash password
     const passwordHash = await bcrypt.hash(password, 10);
+
+    // ✅ Generate verification code
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
+    // ✅ Referral code is automatically the same as userId
     const newUser = new User({
       fullName,
       email,
@@ -70,16 +87,27 @@ router.post("/register", async (req, res) => {
       userId,
       country,
       passwordHash,
-      referralCode,
+      referralCode: userId,   // 👈 auto-assign referralCode = userId
       verificationCode,
       verified: false
     });
 
     await newUser.save();
 
-    res.json({ message: "User registered successfully. Check your email for verification code." });
+    // ✅ Send verification email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Verify your Serenovia account",
+      text: `Welcome ${fullName}! Your verification code is: ${verificationCode}`
+    });
+
+    return res.status(201).json({
+      message: "User registered successfully. Verification email sent."
+    });
   } catch (err) {
-    res.status(500).json({ error: "Registration failed" });
+    console.error("Registration error:", err);
+    return res.status(500).json({ error: "Registration failed" });
   }
 });
 

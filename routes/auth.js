@@ -1,7 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../model/User.ts";
+import User from "../model/User.js";
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 router.post("/login", async (req, res) => {

@@ -1,0 +1,86 @@
+/* src/Pages/LandingPage.css */
+.landing-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+.landing-box {
+  background: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  width: 350px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.landing-title {
+  margin-bottom: 20px;
+  color: #203a43;
+}
+
+.landing-form input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.landing-form button {
+  width: 100%;
+  padding: 12px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.landing-form button:hover {
+  background: #218838;
+}
+
+.landing-footer {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.landing-logo {
+  width: 100px;
+  margin-bottom: 15px;
+}
+
+/* Add to src/Pages/LandingPage.css */
+
+.reset-message {
+  text-align: center;
+  color: #214431;
+  padding: 20px;
+  border: 1px solid #28a745;
+  border-radius: 8px;
+  background: #e6ffed; /* soft green background for success */
+  margin-top: 20px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.reset-message h2 {
+  margin-bottom: 15px;
+  color: #28a745;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.reset-message p {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Optional subtle animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

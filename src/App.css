@@ -1,0 +1,44 @@
+.app_layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Content area (left side) */
+.content {
+  flex: 1;
+  background: #f4f6f9;
+  transition: all 0.3s ease;
+  padding: 20px;
+}
+
+.full_content {
+  width: 100%;
+  background: #f4f6f9;
+  padding: 20px;
+}
+
+/* Topbar above content */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: #006400; /* Serenovia green */
+  color: #fff;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+}
+
+.topbar .hamburger {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.topbar .brand {
+  font-weight: bold;
+  font-size: 18px;
+}

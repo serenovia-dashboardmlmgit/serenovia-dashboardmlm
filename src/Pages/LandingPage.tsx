@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api"; // Axios helper we created
-import Registration from "./Registration"; // import your existing registration form
+import RegistrationNew from "./RegistrationNew"; // ✅ updated import
 import "./LandingPage.css";
 import logo from "../assets/Serenovia.png";
 
@@ -36,7 +36,7 @@ function LandingPage() {
 
         {isRegister ? (
           // Show registration form
-          <Registration />
+          <RegistrationNew />
         ) : (
           // Show login form
           <form onSubmit={handleLogin} className="landing-form">

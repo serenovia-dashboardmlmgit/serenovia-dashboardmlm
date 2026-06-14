@@ -55,10 +55,10 @@ router.post("/login", async (req, res) => {
 // --- Register Route ---
 router.post("/register", async (req, res) => {
   try {
-    const { fullName, email, phone, userId, country, password } = req.body;
+    const { fullName, email, phone, userId, country, password, referralCode } = req.body;
 
-    if (!fullName || !email || !phone || !userId || !country || !password) {
-      return res.status(400).json({ error: "All fields are required" });
+    if (!fullName || !email || !phone || !userId || !country || !password || !referralCode) {
+      return res.status(400).json({ error: "All fields including referral code are required" });
     }
 
     // ✅ Check if email already exists
@@ -73,13 +73,20 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "User ID is already taken. Please choose another one." });
     }
 
+    // ✅ Validate referral code
+    if (referralCode !== "Serenity") {
+      const referrer = await User.findOne({ userId: referralCode });
+      if (!referrer) {
+        return res.status(400).json({ error: "Invalid referral code" });
+      }
+    }
+
     // ✅ Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
     // ✅ Generate verification code
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // ✅ Referral code is automatically the same as userId
     const newUser = new User({
       fullName,
       email,
@@ -87,7 +94,7 @@ router.post("/register", async (req, res) => {
       userId,
       country,
       passwordHash,
-      referralCode: userId,   // 👈 auto-assign referralCode = userId
+      referralCode,   // 👈 stored exactly as typed (either Serenity or a valid userId)
       verificationCode,
       verified: false
     });

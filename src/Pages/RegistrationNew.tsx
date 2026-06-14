@@ -19,28 +19,35 @@ const Registration: React.FC = () => {
     userId: "",
     country: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    referralCode: ""
   });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [message, setMessage] = useState("");
   const [verificationStep, setVerificationStep] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // clear error when typing
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    Object.entries(form).forEach(([key, value]) => {
+      if (!value.trim()) {
+        newErrors[key] = `${key} is required`;
+      }
+    });
+    if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleRegister = async () => {
-    // Validate mandatory fields
-    for (const [key, value] of Object.entries(form)) {
-      if (!value.trim()) {
-        setMessage(`❌ ${key} is required`);
-        return;
-      }
-    }
-    if (form.password !== form.confirmPassword) {
-      setMessage("❌ Passwords do not match");
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/register", {
@@ -55,7 +62,9 @@ const Registration: React.FC = () => {
         setVerificationStep(true);
       } else {
         if (data.error.includes("User ID is already taken")) {
-          setMessage("❌ That User ID is already taken. Please choose another one.");
+          setErrors({ ...errors, userId: "That User ID is already taken. Please choose another one." });
+        } else if (data.error.includes("Referral code")) {
+          setErrors({ ...errors, referralCode: "Referral code is invalid. Enter a valid User ID or type Serenity." });
         } else {
           setMessage(`❌ Error: ${data.error}`);
         }
@@ -76,7 +85,7 @@ const Registration: React.FC = () => {
 
       if (res.ok) {
         setMessage("✅ Email verified successfully! Redirecting to login...");
-        setTimeout(() => navigate("/login"), 2000); // redirect after 2s
+        setTimeout(() => navigate("/login"), 2000);
       } else {
         setMessage(`❌ Verification failed: ${data.error}`);
       }
@@ -94,28 +103,39 @@ const Registration: React.FC = () => {
         <form className="registration-form">
           <label htmlFor="fullName">Full Name</label>
           <input id="fullName" name="fullName" value={form.fullName} onChange={handleChange} />
+          {errors.fullName && <p className="error">{errors.fullName}</p>}
 
           <label htmlFor="email">Email</label>
           <input id="email" name="email" type="email" value={form.email} onChange={handleChange} />
+          {errors.email && <p className="error">{errors.email}</p>}
 
           <label htmlFor="phone">Phone Number</label>
           <input id="phone" name="phone" value={form.phone} onChange={handleChange} />
+          {errors.phone && <p className="error">{errors.phone}</p>}
 
           <label htmlFor="userId">Create User ID</label>
           <input id="userId" name="userId" value={form.userId} onChange={handleChange} />
-          <small className="hint">Your referral code will be the same as your User ID.</small>
+          {errors.userId && <p className="error">{errors.userId}</p>}
+
+          <label htmlFor="referralCode">Referral Code</label>
+          <input id="referralCode" name="referralCode" value={form.referralCode} onChange={handleChange} />
+          <small className="hint">Referral code is mandatory. If you don’t have a referrer, type <strong>Serenity</strong>.</small>
+          {errors.referralCode && <p className="error">{errors.referralCode}</p>}
 
           <label htmlFor="country">Country</label>
           <select id="country" name="country" value={form.country} onChange={handleChange} aria-label="Country">
             <option value="">Select Country</option>
             {africanCountries.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
+          {errors.country && <p className="error">{errors.country}</p>}
 
           <label htmlFor="password">Password</label>
           <input id="password" name="password" type="password" value={form.password} onChange={handleChange} />
+          {errors.password && <p className="error">{errors.password}</p>}
 
           <label htmlFor="confirmPassword">Confirm Password</label>
           <input id="confirmPassword" name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleChange} />
+          {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
 
           <button type="button" className="register-btn" onClick={handleRegister}>
             Create Account

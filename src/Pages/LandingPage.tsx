@@ -15,7 +15,8 @@ function LandingPage() {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await api.post("/login", { email, password });
+      // ✅ Corrected endpoint to match backend route
+      const res = await api.post("/api/auth/login", { email, password });
 
       // Save JWT token in localStorage
       localStorage.setItem("token", res.data.token);
@@ -24,7 +25,7 @@ function LandingPage() {
       navigate("/dashboard"); // redirect after success
     } catch (err: any) {
       console.error("Login failed:", err.response?.data || err.message);
-      alert("Login failed. Please check your credentials.");
+      alert(err.response?.data?.error || "Login failed. Please check your credentials.");
     }
   };
 

@@ -1,6 +1,8 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 
@@ -9,8 +11,6 @@ import statsRoutes from "./routes/stats.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
 import announcementRoutes from "./routes/Announcemet.js"; // ✅ fixed typo
 import verifyEmailRoutes from "./routes/verifyEmail.js";   // ✅ new route
-
-dotenv.config();
 
 const app = express();
 app.use(cors());

@@ -6,10 +6,11 @@ import { transporter } from "../server.js"; // ✅ global transporter
 
 const router = Router();
 
-// Ensure JWT_SECRET is defined
-const JWT_SECRET: string = process.env.JWT_SECRET as string;
+// --- Ensure JWT_SECRET is defined at startup ---
+const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in environment variables");
+  console.error("❌ JWT_SECRET is not defined in environment variables. Please set it in .env");
+  process.exit(1); // stop server gracefully
 }
 
 // --- Login Route ---

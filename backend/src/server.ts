@@ -12,6 +12,12 @@ import leaderboardRoutes from "./routes/leaderboard.js";
 import announcementRoutes from "./routes/Announcemet.js"; // ✅ fixed typo
 import verifyEmailRoutes from "./routes/verifyEmail.js";   // ✅ new route
 
+// --- Ensure JWT_SECRET is defined ---
+if (!process.env.JWT_SECRET) {
+  console.error("❌ JWT_SECRET is not defined in environment variables. Please set it in .env");
+  process.exit(1);
+}
+
 const app = express();
 app.use(cors());
 app.use(express.json());

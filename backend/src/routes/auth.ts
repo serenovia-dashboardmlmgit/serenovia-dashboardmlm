@@ -6,13 +6,6 @@ import { transporter } from "../server.js"; // ✅ global transporter
 
 const router = Router();
 
-// --- Ensure JWT_SECRET is defined at startup ---
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  console.error("❌ JWT_SECRET is not defined in environment variables. Please set it in .env");
-  process.exit(1); // stop server gracefully
-}
-
 // --- Login Route ---
 router.post("/login", async (req, res) => {
   try {
@@ -38,7 +31,7 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id.toString(), email: user.email },
-      JWT_SECRET,
+      process.env.JWT_SECRET as string, // ✅ use secret loaded in server.ts
       { expiresIn: "1h" }
     );
 

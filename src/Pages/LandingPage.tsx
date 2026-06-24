@@ -15,8 +15,8 @@ function LandingPage() {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // ✅ Corrected endpoint to match backend route
-      const res = await api.post("/api/auth/login", { email, password });
+      // ✅ Corrected endpoint to avoid duplicate /api
+      const res = await api.post("/auth/login", { email, password });
 
       // Save JWT token in localStorage
       localStorage.setItem("token", res.data.token);

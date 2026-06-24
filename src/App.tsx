@@ -91,6 +91,10 @@ import Logout from "./Pages/Logout";
 
 import "./App.css";
 
+// ✅ Toastify imports
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   const userRole = "admin"; // later from login/auth
   const location = useLocation();
@@ -130,6 +134,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/rank-banner" element={<RankBanner />} />
 
           {/* Account */}
@@ -218,6 +232,9 @@ function App() {
           {/* Catch-all route (optional) */}
           <Route path="*" element={<Dashboard />} />
         </Routes>
+
+        {/* ✅ Toast container for user feedback */}
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </div>
   );

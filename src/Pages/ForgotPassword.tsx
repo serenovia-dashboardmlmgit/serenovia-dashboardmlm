@@ -3,16 +3,31 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LandingPage.css";
 import logo from "../assets/Serenovia.png"; // adjust filename if different
+import { toast } from "react-toastify";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
 
-  const handleReset = (e: React.FormEvent) => {
+  const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Later: connect to backend API to send reset email
-    setSubmitted(true);
+    try {
+      // ✅ Connect to backend API when ready
+      // Example placeholder request:
+      // const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ email }),
+      // });
+      // const data = await res.json();
+
+      // For now, just simulate success
+      setSubmitted(true);
+      toast.success("✅ Password reset link sent! Please check your email.");
+    } catch (err) {
+      toast.error("❌ Failed to send reset request. Try again later.");
+    }
   };
 
   return (
@@ -39,7 +54,7 @@ function ForgotPassword() {
             <p>
               We’ve sent a password reset link to <strong>{email}</strong>.  
               Please check your inbox.  
-              If you don’t see it, remember to also check your *SPAM* or *JUNK* folder.
+              If you don’t see it, remember to also check your <em>SPAM</em> or <em>JUNK</em> folder.
             </p>
             <button
               className="back-btn"

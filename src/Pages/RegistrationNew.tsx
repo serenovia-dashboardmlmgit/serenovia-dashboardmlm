@@ -1,7 +1,9 @@
+// src/Pages/RegistrationNew.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import serenoviaLogo from "../assets/serenovia.png";
 import "./RegistrationNew.css";
+import { toast } from "react-toastify";
 
 const africanCountries = [
   "Cameroon", "Nigeria", "Ghana", "Kenya", "South Africa",
@@ -23,13 +25,12 @@ const Registration: React.FC = () => {
     referralCode: ""
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [message, setMessage] = useState("");
   const [verificationStep, setVerificationStep] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // clear error when typing
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const validateForm = () => {
@@ -58,19 +59,21 @@ const Registration: React.FC = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("🎉 Registration successful! Please check your email for a verification code.");
+        toast.success("🎉 Registration successful! Please check your email for a verification code.");
         setVerificationStep(true);
       } else {
         if (data.error.includes("User ID is already taken")) {
           setErrors({ ...errors, userId: "That User ID is already taken. Please choose another one." });
+          toast.error("❌ User ID is already taken.");
         } else if (data.error.includes("Referral code")) {
           setErrors({ ...errors, referralCode: "Referral code is invalid. Enter a valid User ID or type Serenity." });
+          toast.error("❌ Referral code is invalid.");
         } else {
-          setMessage(`❌ Error: ${data.error}`);
+          toast.error(`❌ Error: ${data.error}`);
         }
       }
     } catch (err) {
-      setMessage("❌ Registration failed. Please try again.");
+      toast.error("❌ Registration failed. Please try again.");
     }
   };
 
@@ -79,18 +82,18 @@ const Registration: React.FC = () => {
       const res = await fetch("http://localhost:5000/api/verifyEmail", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, code: verificationCode })
+        body: JSON.stringify({ email: form.email, verificationCode })
       });
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("✅ Email verified successfully! Redirecting to login...");
+        toast.success("✅ Email verified successfully! Redirecting to login...");
         setTimeout(() => navigate("/login"), 2000);
       } else {
-        setMessage(`❌ Verification failed: ${data.error}`);
+        toast.error(`❌ Verification failed: ${data.error}`);
       }
     } catch (err) {
-      setMessage("❌ Verification request failed.");
+      toast.error("❌ Verification request failed.");
     }
   };
 
@@ -101,6 +104,7 @@ const Registration: React.FC = () => {
 
       {!verificationStep ? (
         <form className="registration-form">
+          {/* Registration inputs */}
           <label htmlFor="fullName">Full Name</label>
           <input id="fullName" name="fullName" value={form.fullName} onChange={handleChange} />
           {errors.fullName && <p className="error">{errors.fullName}</p>}
@@ -109,23 +113,20 @@ const Registration: React.FC = () => {
           <input id="email" name="email" type="email" value={form.email} onChange={handleChange} />
           {errors.email && <p className="error">{errors.email}</p>}
 
-          <label htmlFor="phone">Phone Number</label>
+          <label htmlFor="phone">Phone</label>
           <input id="phone" name="phone" value={form.phone} onChange={handleChange} />
           {errors.phone && <p className="error">{errors.phone}</p>}
 
-          <label htmlFor="userId">Create User ID</label>
+          <label htmlFor="userId">User ID</label>
           <input id="userId" name="userId" value={form.userId} onChange={handleChange} />
           {errors.userId && <p className="error">{errors.userId}</p>}
 
-          <label htmlFor="referralCode">Referral Code</label>
-          <input id="referralCode" name="referralCode" value={form.referralCode} onChange={handleChange} />
-          <small className="hint">Referral code is mandatory. If you don’t have a referrer, type <strong>Serenity</strong>.</small>
-          {errors.referralCode && <p className="error">{errors.referralCode}</p>}
-
           <label htmlFor="country">Country</label>
-          <select id="country" name="country" value={form.country} onChange={handleChange} aria-label="Country">
-            <option value="">Select Country</option>
-            {africanCountries.map(c => <option key={c} value={c}>{c}</option>)}
+          <select id="country" name="country" value={form.country} onChange={handleChange}>
+            <option value="">Select your country</option>
+            {africanCountries.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
           </select>
           {errors.country && <p className="error">{errors.country}</p>}
 
@@ -137,6 +138,10 @@ const Registration: React.FC = () => {
           <input id="confirmPassword" name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleChange} />
           {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
 
+          <label htmlFor="referralCode">Referral Code</label>
+          <input id="referralCode" name="referralCode" value={form.referralCode} onChange={handleChange} />
+          {errors.referralCode && <p className="error">{errors.referralCode}</p>}
+
           <button type="button" className="register-btn" onClick={handleRegister}>
             Create Account
           </button>
@@ -144,20 +149,30 @@ const Registration: React.FC = () => {
       ) : (
         <div className="verification-step">
           <p>Please enter the verification code sent to your email:</p>
+
+          <label htmlFor="verifyEmail">Email</label>
+          <input
+            id="verifyEmail"
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
+          />
+
           <label htmlFor="verificationCode">Verification Code</label>
           <input
             id="verificationCode"
             name="verificationCode"
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
+            required
           />
+
           <button type="button" className="register-btn" onClick={handleVerify}>
             Verify Email
           </button>
         </div>
       )}
-
-      {message && <p className="message">{message}</p>}
     </div>
   );
 };

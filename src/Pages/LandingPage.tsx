@@ -5,6 +5,7 @@ import api from "../api"; // Axios helper we created
 import RegistrationNew from "./RegistrationNew"; // ✅ updated import
 import "./LandingPage.css";
 import logo from "../assets/Serenovia.png";
+import { toast } from "react-toastify"; // ✅ import toast
 
 function LandingPage() {
   const [email, setEmail] = useState<string>("");
@@ -21,11 +22,11 @@ function LandingPage() {
       // Save JWT token in localStorage
       localStorage.setItem("token", res.data.token);
 
-      console.log("Login successful!");
+      toast.success("🎉 Login successful! Redirecting to dashboard...");
       navigate("/dashboard"); // redirect after success
     } catch (err: any) {
       console.error("Login failed:", err.response?.data || err.message);
-      alert(err.response?.data?.error || "Login failed. Please check your credentials.");
+      toast.error(err.response?.data?.error || "❌ Login failed. Please check your credentials.");
     }
   };
 

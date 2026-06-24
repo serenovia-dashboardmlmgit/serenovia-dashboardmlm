@@ -4,7 +4,7 @@
   "description": "Serenovia MLM backend",
   "main": "server.ts",
   "scripts": {
-    "dev": "ts-node server.ts",
+    "dev": "ts-node ./src/server.ts",
     "build": "tsc",
     "start": "dotenv -e .env node dist/server.js"
   },

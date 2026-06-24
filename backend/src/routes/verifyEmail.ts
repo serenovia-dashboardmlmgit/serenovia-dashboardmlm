@@ -6,10 +6,10 @@ const router = Router();
 // --- Verify Email Route ---
 router.post("/", async (req, res) => {
   try {
-    const { email, code } = req.body;
+    const { email, verificationCode } = req.body;
 
     // Basic validation
-    if (!email || !code) {
+    if (!email || !verificationCode) {
       return res.status(400).json({ error: "Email and code are required" });
     }
 
@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
     }
 
     // Compare codes (string comparison for safety)
-    if (String(user.verificationCode) !== String(code)) {
+    if (String(user.verificationCode) !== String(verificationCode)) {
       return res.status(400).json({ error: "Invalid verification code" });
     }
 

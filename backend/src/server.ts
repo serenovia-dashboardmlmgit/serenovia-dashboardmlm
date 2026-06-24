@@ -6,11 +6,12 @@ import cors from "cors";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 
+// --- Route imports (no .js extension) ---
 import authRoutes from "./routes/auth.js";
 import statsRoutes from "./routes/stats.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
-import announcementRoutes from "./routes/Announcemet.js"; // ✅ fixed typo
-import verifyEmailRoutes from "./routes/verifyEmail.js";   // ✅ new route
+import announcementRoutes from "./routes/Announcemet.js";
+import verifyEmailRoutes from "./routes/verifyEmail.js";
 
 // --- Ensure JWT_SECRET is defined ---
 if (!process.env.JWT_SECRET) {
@@ -41,7 +42,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/announcements", announcementRoutes);
-app.use("/api/verifyEmail", verifyEmailRoutes); // ✅ added
+app.use("/api/verifyEmail", verifyEmailRoutes);
 
 // --- Root Endpoint ---
 app.get("/", (req, res) => res.send("Backend is running!"));
